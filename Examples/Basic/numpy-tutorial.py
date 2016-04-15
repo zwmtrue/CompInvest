@@ -87,7 +87,7 @@ print rangeArray                              #  [ 9 10 11]]
 ## 1D array similar to what you'd get from using the built-in python function
 ## range(...) with the same arguments, except it returns a numpy array
 ## instead of a list.
-print np.arange(6,12) # [ 6  7  8  9 10 11 12]
+print np.arange(6,12) # [ 6  7  8  9 10 11]
 
 ## the reshape method takes the data in an existing array, and stuffs it into
 ## an array with the given shape and returns it.  
@@ -211,8 +211,10 @@ print squareArray * np.arange(1,10).reshape( (3,3) ) #[[ 1  4  9]
 
 ## Unless you use the dot(...) function, which does matrix multiplication
 ## from linear algebra:
-matA = np.array( [[1,2],[3,4]] )
-matB = np.array( [[5,6],[7,8]] )
+matA = np.array( [[1,2],
+                  [3,4]] )
+matB = np.array( [[5,6],
+                  [7,8]] )
 print np.dot(matA,matB) #[[19 22]
                         # [43 50]]
 
