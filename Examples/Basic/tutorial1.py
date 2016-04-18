@@ -105,10 +105,11 @@ def main():
 
     # Plotting the scatter plot of daily returns between $SPX VS GLD
     plt.clf()
-    plt.scatter(na_rets[:, 3], na_rets[:, 1], c='blue')  # $SPX v GLD
+    plt.scatter(na_rets[:, 3], na_rets[:, 1], c='red')  # $SPX v GLD
     plt.ylabel('GLD')
     plt.xlabel('$SPX')
     plt.savefig('scatterSPXvGLD.pdf', format='pdf')
+    print dt_start < dt_end
 
-if __name__ == '__main__':
-    main()
+
+main()
