@@ -57,6 +57,7 @@ def main():
         d_data[s_key] = d_data[s_key].fillna(method='bfill')
         d_data[s_key] = d_data[s_key].fillna(1.0)
 
+    ldt_timestamps1 = du.getNYSEdays(dt.datetime(2006, 1,20), dt_timeofday)
     # Getting the numpy ndarray of close prices.
     na_price = d_data['close'].values
 
