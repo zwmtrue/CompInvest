@@ -25,14 +25,14 @@ def find_events(ls_symbols, d_data):
             f_symprice_today = df_close[s_sym].ix[ldt_timestamps[i]]
             f_symprice_yest = df_close[s_sym].ix[ldt_timestamps[i - 1]]
 
-            if f_symprice_yest >= 6.0 and f_symprice_today < 6.0:
+            if f_symprice_yest >= 10.0 and f_symprice_today < 10.0:
                 df_events[s_sym].ix[ldt_timestamps[i]] = 1
-                    
+
     return df_events
 
 def profile_gen(ldt_timestamps,symbols_gen):
     dataobj = da.DataAccess('Yahoo')
-    ls_symbols = dataobj.get_symbols_from_list(symbols_gen)    
+    ls_symbols = dataobj.get_symbols_from_list(symbols_gen)
     ls_symbols.append('SPY')
     ls_keys = ['close','actual_close']
     ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
@@ -43,12 +43,12 @@ def profile_gen(ldt_timestamps,symbols_gen):
         d_data[s_key] = d_data[s_key].fillna(1.0)
 
     df_events = find_events(ls_symbols, d_data)
-    print "Creating Study " + symbols_gen
+    print "Creating Study_X_X" + symbols_gen
     ep.eventprofiler(df_events, d_data, i_lookback=20, i_lookforward=20,
-                s_filename='MyEventStudy'+ symbols_gen+'.pdf', b_market_neutral=True, b_errorbars=True,
+                s_filename='MyEventStudy_X_X'+ symbols_gen+'.pdf', b_market_neutral=True, b_errorbars=True,
                 s_market_sym='SPY')
 
-    
+
 if __name__ == '__main__':
     dt_start = dt.datetime(2008, 1, 1)
     dt_end = dt.datetime(2009, 12, 31)
@@ -57,4 +57,4 @@ if __name__ == '__main__':
     profile_gen(ldt_timestamps, 'sp5002012')
 
 
-    
+
