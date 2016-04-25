@@ -9,9 +9,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 import math
+
 if __name__ == '__main__':
     dataobj = da.DataAccess('Yahoo', cachestalltime=0)
     dt_timeofday = dt.timedelta(hours=16)
+    starting_cash = 1000000
 #step 1
     ordercsv = 'C:\Users\William\PycharmProjects\CompInvest\HWs\HW3\orders.csv'
     orderbook = csv.reader(open(ordercsv,'rU'),delimiter = ',')
@@ -19,9 +21,7 @@ if __name__ == '__main__':
     ls_symbols = list()
 
     for order in orderbook:
- #       print order
         ls_alldates.append(dt.datetime(int(order[0]),int(order[1]),int(order[2]),16,00))
-
         ls_symbols .append(order[3])
 
 
@@ -29,8 +29,6 @@ if __name__ == '__main__':
     dt_first = min(ls_alldates)
     dt_last = max(ls_alldates)
     ls_symbols =   list(set(ls_symbols))
-#    print dt_alldates,'\n',dt_first,'\n',dt_last
-#    print ls_symbols
     dt_start_read = dt_first
     dt_end_read = dt_last + dt.timedelta(days=1)
 #step2
@@ -38,52 +36,59 @@ if __name__ == '__main__':
     ldt_timestamps = du.getNYSEdays(dt_start_read, dt_end_read, dt_timeofday)
     ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
     ldf_data = dataobj.get_data(ldt_timestamps, ls_symbols, ls_keys)
-
     d_data = dict(zip(ls_keys, ldf_data))
-
-
+    df_close = d_data['close']
     init_val = np.zeros((len(ls_alldates),len(ls_symbols)))
-   # print df_close
 #step 3
     df_trade = pd.DataFrame(init_val,index = ls_alldates,columns = ls_symbols)
     orderbook = csv.reader(open(ordercsv,'rU'),delimiter = ',')
     for order in orderbook:
-      #  print order
         date = dt.datetime(int(order[0]),int(order[1]),int(order[2]),16,00)
         symbol = order[3]
         vol = int(order[5])
         if order[4] is 'Sell':
             vol = -vol
-
-        #init = df_trade_matrix.get_value(, symbol)
         id = ls_alldates.index(date)
         isy = ls_symbols.index(symbol)
-   #     print id, isy
-        #this is not necessary
-        #val =df_trade_matrix.get_value(ls_alldates[id], ls_symbols[isy])
         fin_val = df_trade.set_value(date, symbol, vol )
-  #  print df_trade_matrix
     #step 4
+    ls_symbols.append("_CASH")
     ts_cash = pd.TimeSeries(np.zeros(len(ls_alldates)),index = ls_alldates)
     orderbook = csv.reader(open(ordercsv, 'rU'), delimiter=',')
-
+    ts_cash[dt_first]=starting_cash
     for order in orderbook:
         date= dt.datetime(int(order[0]),int(order[1]),int(order[2]),16,00)
-        vol =int(order[5])
-        price = d_data['close'][symbol][date]
-        print price
+        if date == dt_first:
+            lastdate=date
+        else:
+            id = ls_alldates.index(date)
+            lastdate = ls_alldates[id-1]
 
+        vol = int(order[5])
+        symbol = order[3]
+        if order[4] is 'Sell':#Sell add cash
+            vol = -vol
+       # price = d_data['close'][symbol][date]
+        price = df_close[symbol][date]
+        traded = ts_cash[lastdate]
+       # print 'traded, price of stock, volume, date'
+        #print traded,'\t',price,symbol,'\t',vol,date,traded - price*vol
+        ts_cash[date] = traded - price*vol
+   # print ts_cash
+    df_close['_CASH']=1.0
+    df_trade['_CASH'] = ts_cash
 
+    #step 5
+    df_holding = df_trade.cumsum()
 
+    print 'holding\n',df_holding
+    val = list()
+    for date in ls_alldates:
+        curval = 0
+        for symbol in ls_symbols:
+            curval += df_holding[symbol][date]*df_close[symbol][date]
+        val.append(curval)
+        print date,curval
 
-
-
-
-
-
-
-
-
-
-
+    #print val
 
