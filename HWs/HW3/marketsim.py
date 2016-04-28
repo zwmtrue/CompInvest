@@ -53,13 +53,14 @@ if __name__ == '__main__':
         ls_symbols.append(thisorder.symbol)
     #duplicates removal
     ls_symbols =   list(set(ls_symbols))
-    ls_alldates =  sorted(list(set(ls_alldates)))
+    ls_tradeddates =  sorted(list(set(ls_alldates)))
     dt_first = min(ls_alldates)
     dt_last = max(ls_alldates)
     dt_start_read = dt_first
-    dt_end_read = dt_last + dt.timedelta(days=1)
+    dt_end_read = dt_last# + dt.timedelta(days=1)
+    ls_alldates = du.getNYSEdays(dt_start_read, dt_end_read, dt_timeofday)
+
 #step2
-    dt_timeofday = dt.timedelta(hours=16)
     ldt_timestamps = du.getNYSEdays(dt_start_read,\
     dt_end_read, dt_timeofday)
     ls_keys = ['open', 'high', 'low', 'close', 'volume', 'actual_close']
@@ -83,14 +84,15 @@ if __name__ == '__main__':
     ls_symbols.append("_CASH")
     ts_cash = pd.Series(np.zeros(len(ls_alldates)),index = ls_alldates)
     for today in ls_alldates:
-        orders_in_today = [o for o in ls_orders if o.date == today]
-        expense = 0
-        for o in orders_in_today:
-            expense += df_close[o.symbol][today]*o.volume
-        if today == dt_first:
-            ts_cash[today]= starting_cash - expense
-        else:
-            ts_cash[today]=   -expense 
+        if today in ls_tradeddates:
+            orders_in_today = [o for o in ls_orders if o.date == today]
+            expense = 0
+            for o in orders_in_today:
+                expense += df_close[o.symbol][today]*o.volume
+            if today == dt_first:
+                ts_cash[today]= starting_cash - expense
+            else:
+                ts_cash[today]=   -expense 
             
         
     df_close['_CASH']=1.0
@@ -98,7 +100,7 @@ if __name__ == '__main__':
 #step 5
     df_holding = df_trade.cumsum()
 
-    print 'holding\n',df_holding
+  #  print 'holding\n',df_holding
     val_output = open('values.csv','wb')
     ts_fund = pd.Series()
     writetocsv = csv.writer(val_output,delimiter = ',')
