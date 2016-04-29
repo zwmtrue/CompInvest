@@ -1,4 +1,10 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
+"""
+CompInvestI
+HW3
+
+@author: William
+"""
 import csv
 import QSTK.qstkutil.qsdateutil as du
 import QSTK.qstkutil.tsutil as tsu
@@ -40,7 +46,7 @@ if __name__ == '__main__':
     dt_timeofday = dt.timedelta(hours=16)
     starting_cash = 1000000
 #step 1
-    ordercsv = open('.\orders.csv','rU')
+    ordercsv = open('.\quiz2_orders.csv','rU')
     orderbook = csv.reader(ordercsv,delimiter = ',')
     ls_alldates = list()
     ls_symbols = list()
@@ -57,7 +63,7 @@ if __name__ == '__main__':
     dt_first = min(ls_alldates)
     dt_last = max(ls_alldates)
     dt_start_read = dt_first
-    dt_end_read = dt_last# + dt.timedelta(days=1)
+    dt_end_read = dt_last + dt.timedelta(days=1)
     ls_alldates = du.getNYSEdays(dt_start_read, dt_end_read, dt_timeofday)
 
 #step2
@@ -101,7 +107,7 @@ if __name__ == '__main__':
     df_holding = df_trade.cumsum()
 
   #  print 'holding\n',df_holding
-    val_output = open('values.csv','wb')
+    val_output = open('quiz2_values.csv','wb')
     ts_fund = pd.Series()
     writetocsv = csv.writer(val_output,delimiter = ',')
     for date in ls_alldates:

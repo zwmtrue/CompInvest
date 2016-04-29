@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 """
+CompInvestI
+HW3
 Created on Thu Apr 28 15:37:00 2016
 
 @author: William
@@ -38,39 +40,72 @@ def get_rets(dt_start, dt_end,symbols):
     ldf_data = c_dataobj.get_data(ldt_timestamps, symbols, ls_keys)
     
     d_data = dict(zip(ls_keys, ldf_data))
-    na_price = d_data['close'].values
-    na_price = na_price/ na_price[0,:]
-    return na_price
+    price = d_data['close'].values
+    na_price = price/ price[0,:]
+    return price,na_price
 
+def eval_rets(normalized_Prices):
+    """calculate sharpe ratio and other terms for value series"""    
+    anual_trading_days = 252
+    portf_rets =  normalized_Prices.copy()
+    rets = tsu.returnize0(portf_rets)#returns
+    vol = np.std(rets)#Volatility
+    daily_ret = np.average(rets)#Average Daily Return
+    sharpe = daily_ret/vol*math.sqrt(anual_trading_days)#Sharpe Ratio
+    cum_ret = normalized_Prices[-1]#Cumulative Return
+    return vol,daily_ret,sharpe,cum_ret 
+    
+    
+    
+    
 if __name__ == '__main__':
-    val_output = open('values.csv','rU')
+    #val_output = open('values.csv','rU')
+    val_output = open('quiz_values.csv','rU')
+   #val_output = open('values2.csv','rU')
     val_book = csv.reader(val_output,delimiter = ',')
     ls_vals = list()
     ls_alldates = list()
+    anual_trading_days = 252
     
     for valueinfo in val_book:
         val = value(valueinfo)
-        ls_vals.append(val.value)
+        ls_vals.append(val.value) 
         ls_alldates.append(val.date)
-    dt_first = min(ls_alldates)
+
+    dt_timeofday = dt.timedelta(hours=16)
+    dt_first = min(ls_alldates) 
     dt_last = max(ls_alldates)
+    del ls_alldates[-1]
+    del ls_vals[-1]
+
     init_val = ls_vals[0]
     normalized_vals = [v/init_val for v in ls_vals]
-  #  dailyval =normalized_vals.copy() ;
-
-#    num_of_days = int((dt_last - dt_first).days-1)
-
     ts_rets  = pd.TimeSeries( normalized_vals,index = ls_alldates)
-    anual_trading_days = 252
-     
-    rets = tsu.returnize0(ts_rets)#returns
-    vol = np.std(rets)#Volatility
-    portf_cum_rets = normalized_vals[-1]
-    daily_ret = np.average(rets)#Average Daily Return   
-    sharpe_ratio = daily_ret*math.sqrt(anual_trading_days)/vol#Sharpe Ratio
+    ls_symbols = ["$SPX"]
+    spx_price,spx_normalized_price = get_rets(dt_first, dt_last,ls_symbols)
+    [sim_vol,sim_daily_ret,sim_sharpe_ratio,sim_cum_ret] = eval_rets(ts_rets)  
+    [spx_vol,spx_daily_ret,spx_sharpe_ratio,spx_cum_ret] = eval_rets(spx_normalized_price)
     
-    spx_normalized_price = get_rets(dt_start, dt_end,'')
-    
-    
+    print'Details of the Performance of the portfolio :'
+    print'Data Range :'+ str(dt_first +dt_timeofday) +' to '+ str(dt_last +dt_timeofday)
+    print'Sharpe Ratio of Fund :  ',sim_sharpe_ratio
+    print'Sharpe Ratio of $SPX :  ',spx_sharpe_ratio
+    print'Total Return of Fund :  ',sim_cum_ret
+    print'Total Return of $SPX : ',spx_cum_ret[0]
+    print'Standard Deviation of Fund :  ',sim_vol
+    print'Standard Deviation of $SPX : ',spx_vol
+    print'Average Daily Return of Fund :  ',sim_daily_ret
+    print'Average Daily Return of $SPX : ',spx_daily_ret
 
-    
+    pltsimbol = ['$SPX','MarketSim']
+    plt.clf()
+
+    plt.plot(ls_alldates, spx_normalized_price)
+    plt.plot(ls_alldates, normalized_vals)
+    plt.legend(pltsimbol)    
+    plt.ylabel('Adjusted Close')
+    plt.xlabel('Date')
+    plt.title('Normalized Price History')
+
+    plt.show()
+    plt.savefig('Normalized_Price_History.pdf', format='pdf')
