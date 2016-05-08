@@ -1,0 +1,10 @@
+Details of the Performance of the portfolio : $7
+Data Range :2008-01-03  to 2009-12-16  
+Sharpe Ratio of Fund :   0.853970309356
+Sharpe Ratio of $SPX :   -0.211858724007
+Total Return of Fund :   1.20618
+Total Return of $SPX :  0.765589153929
+Standard Deviation of Fund :   0.00760232198877
+Standard Deviation of $SPX :  0.0221667846437
+Average Daily Return of Fund :   0.000408967466281
+Average Daily Return of $SPX :  -0.000295834475593
