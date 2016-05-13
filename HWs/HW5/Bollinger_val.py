@@ -74,3 +74,7 @@ ldt_timestamps = du.getNYSEdays(dt_s, dt_e, dt_timeofday)
 #ls_sylboms = ['AAPL','GOOG','IBM','MSFT']
 Google_price = get_price(ldt_timestamps,['GOOG'])
 Google_bollinger_val = bollinger(ldt_timestamps,Google_price)
+Apple_price = get_price(ldt_timestamps,['AAPL'])
+Apple_bollinger_val = bollinger(ldt_timestamps,Apple_price)
+MSFT_price = get_price(ldt_timestamps,['MSFT'])
+MSFT_bollinger_val = bollinger(ldt_timestamps,MSFT_price)
